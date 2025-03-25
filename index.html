@@ -1,107 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coma.FM Now Playing</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      font-family: 'Inter', sans-serif;
-      color: white;
-    }
-    iframe, .lava-container {
-      position: absolute;
-      width: 100vw;
-      height: 100vh;
-      top: 0;
-      left: 0;
-      border: none;
-    }
-    .now-playing {
-      position: absolute;
-      bottom: 2vh;
-      left: 2vw;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 1rem 1.5rem;
-      border-radius: 1rem;
-      font-size: 1.2rem;
-    }
-    .spotify-button {
-      position: absolute;
-      bottom: 2vh;
-      right: 2vw;
-      z-index: 10;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 0.5rem 1rem;
-      border: 1px solid white;
-      border-radius: 2rem;
-      text-decoration: none;
-      color: white;
-      font-weight: bold;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>coma.fm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="style.css" rel="stylesheet">
 </head>
 <body>
-  <!-- Фон лава-лампи -->
-  <div class="lava-container">
-    <div class="lava-blob blob1"></div>
-    <div class="lava-blob blob2"></div>
-    <div class="lava-blob blob3"></div>
-    <div class="lava-blob blob4"></div>
-    <div class="overlay"></div>
+  <div id="lava-bg"></div>
+  <div id="weblets">
+    <div class="weblet" id="player">[player weblet]</div>
+    <div class="weblet" id="passport">[passport weblet]</div>
+    <div class="weblet" id="history">[history weblet]</div>
+    <div class="weblet" id="favorites">[favorites weblet]</div>
   </div>
-
-  <!-- Дані про поточний трек -->
-  <div class="now-playing" id="track">Loading...</div>
-
-  <!-- Кнопка Spotify -->
-  <a class="spotify-button" id="spotify" href="#" target="_blank">Open in Spotify</a>
-
-  <script>
-    async function fetchNowPlaying() {
-      const res = await fetch('https://public.radio.co/stations/s213997/status');
-      const data = await res.json();
-      const track = data.current_track?.title || 'Unknown track';
-      const artwork = data.current_track?.artwork_url || '';
-
-      document.getElementById('track').textContent = track;
-      if (data.current_track?.spotify_url) {
-        document.getElementById('spotify').href = data.current_track.spotify_url;
-      } else {
-        document.getElementById('spotify').style.display = 'none';
-      }
-    }
-    fetchNowPlaying();
-    setInterval(fetchNowPlaying, 15000);
-  </script>
-  
-  <script>
-    // Лава-лампа з optimized-lava-lamp.html
-    const container = document.querySelector('.lava-container');
-    const colors = ['#8b0046','#004b8c','#4b0082','#006400','#800080','#00458b','#8b4500','#2f4f4f'];
-    const maxExtraBlobs = 5;
-    const extraBlobsCount = Math.min(
-      Math.floor(Math.max(window.innerWidth, window.innerHeight) / 600) + 1,
-      maxExtraBlobs
-    );
-    for (let i = 0; i < extraBlobsCount; i++) {
-      const blob = document.createElement('div');
-      blob.className = 'lava-blob';
-      const size = Math.random() * 15 + 15 + 'vw';
-      blob.style.width = size;
-      blob.style.height = size;
-      blob.style.background = colors[Math.floor(Math.random() * colors.length)];
-      blob.style.left = Math.random() * 70 + 10 + 'vw';
-      blob.style.top = Math.random() * 70 + 10 + 'vh';
-      const duration = (Math.random() * 5 + 20) + 's';
-      const delay = (Math.random() * -15) + 's';
-      blob.style.animation = `float${i % 4 + 1} ${duration} ease-in-out infinite`;
-      blob.style.animationDelay = delay;
-      container.appendChild(blob);
-    }
-  </script>
+  <script src="lava.js"></script>
 </body>
 </html>
