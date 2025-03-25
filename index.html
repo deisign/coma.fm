@@ -2,19 +2,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>coma.fm</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="style.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="lava-bg"></div>
-  <div id="weblets">
-    <div class="weblet" id="player">[player weblet]</div>
-    <div class="weblet" id="passport">[passport weblet]</div>
-    <div class="weblet" id="history">[history weblet]</div>
-    <div class="weblet" id="favorites">[favorites weblet]</div>
+  <div class="weblets">
+    <!-- Плеєр із паспортом треку -->
+    <div id="nowplaying"></div>
   </div>
-  <script src="lava.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
