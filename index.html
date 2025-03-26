@@ -11,10 +11,11 @@
   <div id="lava-bg"></div>
 
   <div class="weblets">
-    <div class="nowplaying">
-      <img id="artwork" src="" alt="Artwork">
-      <div class="info">
-        <div class="title" id="title">Loading...</div>
+    <div class="nowplaying" id="player-box">
+      <div id="fallback">Effort is offline. Silence is part of music.</div>
+      <img id="artwork" class="hidden" src="" alt="Artwork">
+      <div class="info hidden" id="info">
+        <div class="title" id="title"></div>
         <div class="album" id="album"></div>
         <div class="tags" id="tags"></div>
         <a id="spotify" class="spotify-button" href="#" target="_blank">Open in Spotify</a>

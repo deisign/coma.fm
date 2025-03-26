@@ -9,21 +9,38 @@ async function fetchNowPlaying() {
   const track = data.current_track?.title;
   const artist = data.current_track?.artist;
 
-  document.getElementById('title').textContent = track || 'No track';
-
-  if (data.current_track?.artwork_url) {
-    document.getElementById('artwork').src = data.current_track.artwork_url;
+  if (!track || track.toLowerCase().includes("no track")) {
+    showFallback();
+    return;
   }
 
-  if (data.current_track?.spotify_url) {
-    const spotifyLink = document.getElementById('spotify');
-    spotifyLink.href = data.current_track.spotify_url;
-    spotifyLink.style.display = 'inline-block';
+  document.getElementById('fallback').classList.add('hidden');
+  document.getElementById('info').classList.remove('hidden');
+
+  document.getElementById('title').textContent = track;
+
+  if (data.current_track?.artwork_url) {
+    const img = document.getElementById('artwork');
+    img.src = data.current_track.artwork_url;
+    img.classList.remove('hidden');
+  }
+
+  const spotify = data.current_track?.spotify_url;
+  const btn = document.getElementById('spotify');
+  if (spotify) {
+    btn.href = spotify;
+    btn.classList.remove('hidden');
   } else {
-    document.getElementById('spotify').style.display = 'none';
+    btn.classList.add('hidden');
   }
 
   if (artist && track) fetchFromLastFM(artist, track);
+}
+
+function showFallback() {
+  document.getElementById('fallback').classList.remove('hidden');
+  document.getElementById('info').classList.add('hidden');
+  document.getElementById('artwork').classList.add('hidden');
 }
 
 async function fetchFromLastFM(artist, track) {
@@ -34,7 +51,6 @@ async function fetchFromLastFM(artist, track) {
   if (data.track) {
     const album = data.track.album?.title || '';
     const tags = data.track.toptags?.tag?.map(t => t.name).slice(0, 5).join(', ') || '';
-
     document.getElementById('album').textContent = album;
     document.getElementById('tags').textContent = tags;
   }
