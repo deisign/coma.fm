@@ -1,25 +1,64 @@
-// Загружаем данные о текущем треке при загрузке страницы
-document.addEventListener('DOMContentLoaded', getRadioTrackInfo);
+// Spotify Client ID и Client Secret
+const SPOTIFY_CLIENT_ID = 'c129e640644a4b00aea9f879d5dd54f1';
+const SPOTIFY_CLIENT_SECRET = 'ed3cf875c7a0492bb93a0aed5a5eaefd';
 
-// Функция для получения данных о треке через Radio.co API
-async function getRadioTrackInfo() {
-    const stationId = 's213997'; // ID вашей станции
-    const apiUrl = `https://public.radio.co/stations/${stationId}/current`;
-
+// Функция для получения токена Spotify
+async function getSpotifyToken() {
     try {
-        const response = await fetch(apiUrl);
+        const response = await fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': `Basic ${btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`)}`,
+            },
+            body: 'grant_type=client_credentials',
+        });
         if (!response.ok) {
-            throw new Error(`Radio.co API Error: ${response.status}`);
+            throw new Error(`Spotify Token Error: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Radio.co Data:', data);
-
-        // Обновление паспорта трека
-        document.getElementById('passport-artist').textContent = data.artist || 'N/A';
-        document.getElementById('passport-track').textContent = data.title || 'N/A'; // Название трека
-        document.getElementById('passport-album').textContent = 'N/A'; // Если альбом недоступен
-        document.getElementById('passport-cover').src = data.artwork || 'https://via.placeholder.com/120'; // Обложка трека
+        return data.access_token;
     } catch (error) {
-        console.error('Error fetching Radio.co track info:', error);
+        console.error('Error fetching Spotify token:', error);
     }
 }
+
+// Функция для поиска трека в Spotify
+async function getSpotifyTrackInfo(trackName) {
+    try {
+        const token = await getSpotifyToken();
+        const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(trackName)}&type=track&limit=1`;
+        const response = await fetch(url, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) {
+            throw new Error(`Spotify Search Error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.tracks.items[0]; // Первый найденный трек
+    } catch (error) {
+        console.error('Error fetching Spotify track info:', error);
+    }
+}
+
+// Функция для обновления паспорта трека
+async function updateTrackPassport() {
+    try {
+        const trackName = 'Get Lucky'; // Замените на динамическое название трека
+        const trackData = await getSpotifyTrackInfo(trackName);
+
+        if (trackData) {
+            document.getElementById('passport-artist').textContent = trackData.artists[0].name || 'N/A';
+            document.getElementById('passport-track').textContent = trackData.name || 'N/A';
+            document.getElementById('passport-album').textContent = trackData.album.name || 'N/A';
+            document.getElementById('passport-year').textContent = trackData.album.release_date.split('-')[0] || 'N/A';
+            document.getElementById('passport-genre').textContent = 'N/A'; // Spotify API не возвращает жанр напрямую
+            document.getElementById('passport-cover').src = trackData.album.images[0].url || 'https://via.placeholder.com/120';
+        }
+    } catch (error) {
+        console.error('Error updating track passport:', error);
+    }
+}
+
+// Загружаем данные при старте страницы
+document.addEventListener('DOMContentLoaded', updateTrackPassport);
