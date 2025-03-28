@@ -14,23 +14,34 @@
         <div class="lava-blob blob2"></div>
     </div>
 
-    <!-- Контейнер для плеера и паспорта трека -->
-    <div id="content">
-        <!-- Родной плеер -->
-        <div id="player-container">
-            <h2>Coma FM Player</h2>
-            <script src="https://embed.radio.co/player/6dcf221.js"></script>
-        </div>
+    <!-- Плеер -->
+    <div id="player-container">
+        <h2>Coma FM Player</h2>
+        <script src="https://embed.radio.co/player/6dcf221.js"></script>
+    </div>
 
-        <!-- Паспорт трека -->
-        <div id="track-passport">
-            <h2>Track Passport</h2>
-            <img id="passport-cover" src="https://via.placeholder.com/120" alt="Album Cover" style="border-radius: 8px; margin-bottom: 10px;">
-            <p><strong>Artist:</strong> <span id="passport-artist">Loading...</span></p>
-            <p><strong>Track:</strong> <span id="passport-track">Loading...</span></p>
-            <p><strong>Album:</strong> <span id="passport-album">Loading...</span></p>
-            <p><strong>Year:</strong> <span id="passport-year">Loading...</span></p>
-            <p><strong>Genre:</strong> <span id="passport-genre">Loading...</span></p>
+    <!-- Паспорт трека (закомментирован) -->
+    <!--
+    <div id="track-passport">
+        <h2>Track Passport</h2>
+        <img id="passport-cover" src="https://via.placeholder.com/120" alt="Album Cover" style="border-radius: 8px; margin-bottom: 10px;">
+        <p><strong>Artist:</strong> <span id="passport-artist">Loading...</span></p>
+        <p><strong>Track:</strong> <span id="passport-track">Loading...</span></p>
+        <p><strong>Album:</strong> <span id="passport-album">Loading...</span></p>
+        <p><strong>Year:</strong> <span id="passport-year">Loading...</span></p>
+        <p><strong>Genre:</strong> <span id="passport-genre">Loading...</span></p>
+    </div>
+    -->
+
+    <!-- Всплывающее окно с историей -->
+    <button id="history-button">History</button>
+    <div id="history-popup" class="hidden">
+        <div class="history-header">
+            <h2>Listening History</h2>
+            <button id="close-button">&times;</button>
+        </div>
+        <div id="history-content">
+            <p>Loading...</p>
         </div>
     </div>
 
