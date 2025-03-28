@@ -1,48 +1,25 @@
-// Last.fm API ключ
-const LAST_FM_API_KEY = 'c7a0f0ef6e54d0bc9c877ef6cdaf3949';
+// Загружаем данные о текущем треке при загрузке страницы
+document.addEventListener('DOMContentLoaded', getRadioTrackInfo);
 
-// Функция для получения данных о текущем треке с Last.fm
-async function getLastFmTrackInfo(artist, track) {
+// Функция для получения данных о треке через Radio.co API
+async function getRadioTrackInfo() {
+    const stationId = 's213997'; // ID вашей станции
+    const apiUrl = `https://public.radio.co/stations/${stationId}/current`;
+
     try {
-        const url = `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LAST_FM_API_KEY}&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(track)}&format=json`;
-        const response = await fetch(url);
+        const response = await fetch(apiUrl);
         if (!response.ok) {
-            throw new Error(`Last.fm API Error: ${response.status}`);
+            throw new Error(`Radio.co API Error: ${response.status}`);
         }
         const data = await response.json();
+        console.log('Radio.co Data:', data);
 
-        // Обновляем паспорт трека
-        document.getElementById('passport-artist').textContent = data.track.artist.name || 'N/A';
-        document.getElementById('passport-track').textContent = data.track.name || 'N/A';
-        document.getElementById('passport-album').textContent = data.track.album?.title || 'N/A';
-        document.getElementById('passport-year').textContent = data.track.wiki?.published?.split(', ')[1] || 'N/A';
-        document.getElementById('passport-genre').textContent = data.track.toptags?.tag?.[0]?.name || 'N/A';
-        document.getElementById('passport-cover').src = data.track.album?.image?.[2]?.['#text'] || 'https://via.placeholder.com/120';
+        // Обновление паспорта трека
+        document.getElementById('passport-artist').textContent = data.artist || 'N/A';
+        document.getElementById('passport-track').textContent = data.title || 'N/A'; // Название трека
+        document.getElementById('passport-album').textContent = 'N/A'; // Если альбом недоступен
+        document.getElementById('passport-cover').src = data.artwork || 'https://via.placeholder.com/120'; // Обложка трека
     } catch (error) {
-        console.error('Error fetching Last.fm data:', error);
+        console.error('Error fetching Radio.co track info:', error);
     }
 }
-
-// Функция для получения текущего трека из радио-плеера (если доступно API радио)
-async function getCurrentTrack() {
-    try {
-        // Пример запроса к вашему радио API (замените на рабочий URL)
-        const response = await fetch('https://your-radio-api-url/now-playing');
-        if (!response.ok) {
-            throw new Error(`Radio API Error: ${response.status}`);
-        }
-        const data = await response.json();
-
-        // Получаем исполнителя и трек
-        const artist = data.artist || 'Unknown Artist';
-        const track = data.track || 'Unknown Track';
-
-        // Обновляем паспорт трека через Last.fm
-        await getLastFmTrackInfo(artist, track);
-    } catch (error) {
-        console.error('Error fetching current track:', error);
-    }
-}
-
-// Загружаем данные при старте страницы
-document.addEventListener('DOMContentLoaded', getCurrentTrack);
