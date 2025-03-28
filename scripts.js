@@ -8,35 +8,57 @@ const SPOTIFY_CLIENT_SECRET = 'ed3cf875c7a0492bb93a0aed5a5eaefd';
 
 // Функция для получения Spotify токена
 async function getSpotifyToken() {
-    const response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`)}`,
-        },
-        body: 'grant_type=client_credentials',
-    });
-    const data = await response.json();
-    return data.access_token;
+    try {
+        const response = await fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': `Basic ${btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`)}`,
+            },
+            body: 'grant_type=client_credentials',
+        });
+        if (!response.ok) {
+            throw new Error(`Spotify Token Error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.access_token;
+    } catch (error) {
+        console.error('Error fetching Spotify token:', error);
+    }
 }
 
 // Функция для получения ссылки на Spotify
 async function getSpotifyLink(token, artist, track) {
-    const query = `track:${encodeURIComponent(track)} artist:${encodeURIComponent(artist)}`;
-    const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=track&limit=1`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    const data = await response.json();
-    return data.tracks.items[0]?.external_urls.spotify || '#';
+    try {
+        const query = `track:${encodeURIComponent(track)} artist:${encodeURIComponent(artist)}`;
+        const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=track&limit=1`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) {
+            throw new Error(`Spotify Search Error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.tracks.items[0]?.external_urls.spotify || '#';
+    } catch (error) {
+        console.error(`Error fetching Spotify link for ${artist} - ${track}:`, error);
+        return '#';
+    }
 }
 
 // Получение истории из Radio.co
 async function fetchRadioHistory() {
-    const response = await fetch(radioHistoryUrl);
-    const data = await response.json();
-    return data.data; // Возвращает массив треков
+    try {
+        const response = await fetch(radioHistoryUrl);
+        if (!response.ok) {
+            throw new Error(`Radio.co API Error: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('Radio.co History:', data.data); // Лог для проверки данных
+        return data.data; // Возвращает массив треков
+    } catch (error) {
+        console.error('Error fetching Radio.co history:', error);
+        return [];
+    }
 }
 
 // Создание списка истории воспроизведений
@@ -48,16 +70,19 @@ async function updateHistory() {
         const token = await getSpotifyToken();
         const tracks = await fetchRadioHistory();
 
-        const trackList = tracks.map(async track => {
-            const spotifyLink = await getSpotifyLink(token, track.artist, track.title);
-            return `<li>${track.artist} - ${track.title} <a href="${spotifyLink}" target="_blank">Spotify</a></li>`;
-        });
+        // Асинхронная обработка треков
+        const trackList = await Promise.all(
+            tracks.map(async track => {
+                const spotifyLink = await getSpotifyLink(token, track.artist, track.title);
+                return `<li>${track.artist} - ${track.title} <a href="${spotifyLink}" target="_blank">Spotify</a></li>`;
+            })
+        );
 
-        const resolvedTracks = await Promise.all(trackList);
-        historyContent.innerHTML = `<ul>${resolvedTracks.join('')}</ul>`;
+        // Обновляем содержимое истории
+        historyContent.innerHTML = `<ul>${trackList.join('')}</ul>`;
     } catch (error) {
         historyContent.innerHTML = '<p>Error loading history. Please try again later.</p>';
-        console.error('Error fetching history:', error);
+        console.error('Error updating history:', error);
     }
 }
 
