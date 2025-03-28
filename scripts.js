@@ -21,7 +21,7 @@ async function getSpotifyToken() {
             throw new Error(`Ошибка токена Spotify: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Spotify токен:', data.access_token);
+        console.log('Spotify токен:', data.access_token); // Лог токена
         return data.access_token;
     } catch (error) {
         console.error('Ошибка получения токена Spotify:', error);
@@ -37,7 +37,7 @@ async function getSpotifyLink(token, artist, track) {
     }
     try {
         const query = `track:${encodeURIComponent(track)} artist:${encodeURIComponent(artist)}`;
-        console.log('Spotify запрос:', query);
+        console.log('Spotify запрос:', query); // Лог запроса
         const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=track&limit=1`, {
             headers: { Authorization: `Bearer ${token}` },
         });
@@ -45,7 +45,7 @@ async function getSpotifyLink(token, artist, track) {
             throw new Error(`Ошибка запроса Spotify: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Ответ Spotify:', data);
+        console.log('Ответ Spotify:', data); // Лог ответа
         return data.tracks.items[0]?.external_urls.spotify || '#';
     } catch (error) {
         console.error(`Ошибка получения ссылки на Spotify для ${artist} - ${track}:`, error);
@@ -61,7 +61,7 @@ async function fetchRadioHistory() {
             throw new Error(`Ошибка API Radio.co: ${response.status}`);
         }
         const data = await response.json();
-        console.log('История Radio.co:', data.data);
+        console.log('История Radio.co:', data.data); // Лог данных
         return data.data;
     } catch (error) {
         console.error('Ошибка получения истории Radio.co:', error);
@@ -78,12 +78,12 @@ async function updateHistory() {
         const token = await getSpotifyToken();
         const tracks = await fetchRadioHistory();
 
-        console.log('Треки из Radio.co:', tracks);
+        console.log('Треки из Radio.co:', tracks); // Лог треков
 
         const trackList = await Promise.all(
             tracks.map(async (track) => {
                 const spotifyLink = await getSpotifyLink(token, track.artist, track.title);
-                console.log(`Трек: ${track.artist} - ${track.title}, Ссылка Spotify: ${spotifyLink}`);
+                console.log(`Трек: ${track.artist} - ${track.title}, Ссылка Spotify: ${spotifyLink}`); // Лог Spotify
                 return `<li>${track.artist} - ${track.title} <a href="${spotifyLink}" target="_blank">Spotify</a></li>`;
             })
         );
