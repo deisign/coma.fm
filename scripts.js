@@ -18,32 +18,37 @@ async function getSpotifyToken() {
             body: 'grant_type=client_credentials',
         });
         if (!response.ok) {
-            throw new Error(`Spotify Token Error: ${response.status}`);
+            throw new Error(`Ошибка токена Spotify: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Spotify Token:', data.access_token); // Лог токена
+        console.log('Spotify токен:', data.access_token);
         return data.access_token;
     } catch (error) {
-        console.error('Error fetching Spotify token:', error);
+        console.error('Ошибка получения токена Spotify:', error);
+        return null;
     }
 }
 
 // Функция для получения ссылки на Spotify
 async function getSpotifyLink(token, artist, track) {
+    if (!token) {
+        console.error('Токен Spotify отсутствует!');
+        return '#';
+    }
     try {
         const query = `track:${encodeURIComponent(track)} artist:${encodeURIComponent(artist)}`;
-        console.log('Spotify Query:', query); // Лог запроса
+        console.log('Spotify запрос:', query);
         const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=track&limit=1`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) {
-            throw new Error(`Spotify Search Error: ${response.status}`);
+            throw new Error(`Ошибка запроса Spotify: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Spotify Response:', data); // Лог ответа
+        console.log('Ответ Spotify:', data);
         return data.tracks.items[0]?.external_urls.spotify || '#';
     } catch (error) {
-        console.error(`Error fetching Spotify link for ${artist} - ${track}:`, error);
+        console.error(`Ошибка получения ссылки на Spotify для ${artist} - ${track}:`, error);
         return '#';
     }
 }
@@ -53,13 +58,13 @@ async function fetchRadioHistory() {
     try {
         const response = await fetch(radioHistoryUrl);
         if (!response.ok) {
-            throw new Error(`Radio.co API Error: ${response.status}`);
+            throw new Error(`Ошибка API Radio.co: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Radio.co History:', data.data); // Лог данных Radio.co
-        return data.data; // Возвращает массив треков
+        console.log('История Radio.co:', data.data);
+        return data.data;
     } catch (error) {
-        console.error('Error fetching Radio.co history:', error);
+        console.error('Ошибка получения истории Radio.co:', error);
         return [];
     }
 }
@@ -67,27 +72,26 @@ async function fetchRadioHistory() {
 // Создание списка истории воспроизведений
 async function updateHistory() {
     const historyContent = document.getElementById('history-content');
-    historyContent.innerHTML = '<p>Loading...</p>';
+    historyContent.innerHTML = '<p>Загрузка...</p>';
 
     try {
         const token = await getSpotifyToken();
         const tracks = await fetchRadioHistory();
 
-        console.log('Tracks from Radio.co:', tracks); // Лог треков
+        console.log('Треки из Radio.co:', tracks);
 
         const trackList = await Promise.all(
-            tracks.map(async track => {
+            tracks.map(async (track) => {
                 const spotifyLink = await getSpotifyLink(token, track.artist, track.title);
-                console.log(`Track: ${track.artist} - ${track.title}, Spotify Link: ${spotifyLink}`); // Лог ссылки на Spotify
+                console.log(`Трек: ${track.artist} - ${track.title}, Ссылка Spotify: ${spotifyLink}`);
                 return `<li>${track.artist} - ${track.title} <a href="${spotifyLink}" target="_blank">Spotify</a></li>`;
             })
         );
 
-        // Обновляем содержимое истории
         historyContent.innerHTML = `<ul>${trackList.join('')}</ul>`;
     } catch (error) {
-        historyContent.innerHTML = '<p>Error loading history. Please try again later.</p>';
-        console.error('Error updating history:', error);
+        historyContent.innerHTML = '<p>Ошибка загрузки истории. Попробуйте позже.</p>';
+        console.error('Ошибка обновления истории:', error);
     }
 }
 
