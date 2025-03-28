@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://public.radio.co https://api.spotify.com;">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://embed.radio.co; style-src 'self' https://fonts.googleapis.com; connect-src 'self' https://public.radio.co https://api.spotify.com;">
-
     <title>Coma FM</title>
     <!-- Подключение фавикона -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Стили -->
     <link rel="stylesheet" href="styles.css">
+    <!-- Политика безопасности контента -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://embed.radio.co; style-src 'self' https://fonts.googleapis.com; connect-src 'self' https://public.radio.co https://api.spotify.com;">
 </head>
 <body>
     <!-- Лава-фон -->
@@ -25,7 +26,7 @@
         <script src="https://embed.radio.co/player/6dcf221.js"></script>
     </div>
 
-    <!-- Паспорт трека (закомментирован для дальнейших доработок) -->
+    <!-- Паспорт трека (закомментирован) -->
     <!--
     <div id="track-passport">
         <h2>Track Passport</h2>
