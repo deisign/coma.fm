@@ -8,10 +8,16 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Стили -->
+    <!-- Основные стили -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Политика безопасности контента -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://embed.radio.co; style-src 'self' https://fonts.googleapis.com; connect-src 'self' https://public.radio.co https://api.spotify.com;">
+    <!-- Политика безопасности контента (CSP) -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self'; 
+        script-src 'self' 'unsafe-inline' https://embed.radio.co; 
+        style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; 
+        font-src 'self' https://fonts.gstatic.com; 
+        connect-src 'self' https://public.radio.co https://api.spotify.com; 
+        frame-src https://embed.radio.co;">
 </head>
 <body>
     <!-- Лава-фон -->
@@ -20,13 +26,13 @@
         <div class="lava-blob blob2"></div>
     </div>
 
-    <!-- Плеер -->
+    <!-- Плеер Radio.co -->
     <div id="player-container">
         <h2>Coma FM Player</h2>
         <script src="https://embed.radio.co/player/6dcf221.js"></script>
     </div>
 
-    <!-- Паспорт трека (закомментирован) -->
+    <!-- Паспорт трека (временно закомментирован) -->
     <!--
     <div id="track-passport">
         <h2>Track Passport</h2>
@@ -39,7 +45,7 @@
     </div>
     -->
 
-    <!-- Всплывающее окно для истории -->
+    <!-- Секция истории прослушиваний -->
     <button id="history-button">History</button>
     <div id="history-popup" class="hidden">
         <div class="history-header">
@@ -51,6 +57,7 @@
         </div>
     </div>
 
+    <!-- Основной скрипт -->
     <script src="scripts.js"></script>
 </body>
 </html>
